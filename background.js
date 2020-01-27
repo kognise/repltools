@@ -1,18 +1,9 @@
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [
-        new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: {
-            hostSuffix: 'repl.it',
-            schemes: [ 'https' ],
-            originAndPathMatches: '.*repl\\.it/@.+/.+'
-          }
-        })
-      ],
-      actions: [ new chrome.declarativeContent.ShowPageAction() ]
-    }])
-  })
+chrome.tabs.onUpdated.addListener((id, change, tab) => {
+  if (change.status === 'complete' && /^https:\/\/(.+\.)?repl\.it\/@.+\/.+\/?$/.test(tab.url)) {
+    chrome.pageAction.show(id)
+  } else {
+    chrome.pageAction.hide(id)
+  }
 })
 
 chrome.runtime.onMessage.addListener((message, _, respond) => {
